@@ -13,9 +13,11 @@ public class TwoFingerTouchControls : MonoBehaviour
     public float dragSensitivity;
 
     [Header("Drag")]
+    [Range(0, 1)] public float thresholdForSameDirection = 0.8f;
     public UnityEvent<Vector2> onDrag;
 
     [Header("Pinch")]
+    [Range(-1, 0)] public float thresholdForOppositeDirection = -0.8f;
     public UnityEvent<float> onPinch;
 
     [Header("Rotate")]
@@ -74,6 +76,9 @@ public class TwoFingerTouchControls : MonoBehaviour
     {
         if (registeringInput)
         {
+            Vector2 fingerDirection1 = newFingerPosition1 - fingerPosition1;
+            Vector2 fingerDirection2 = newFingerPosition2 - fingerPosition2;
+            float dotProduct = Vector2.Dot(fingerDirection1, fingerDirection2);
             bool sameDirection = true;//dotProduct > thresholdForSameDirection;
             bool oppositeDirection = true;//dotProduct < thresholdForOppositeDirection;
 
