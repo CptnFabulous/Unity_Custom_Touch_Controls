@@ -23,29 +23,12 @@ public class TwoFingerTouchControls : MonoBehaviour
     Vector2 oldFingerPos1;
     Vector2 oldFingerPos2;
 
-    Vector2 oldDragPosition;
-    float oldPinchDistance;
-    float oldRotationAngle;
-
-    public bool registeringInput => fingerContact1 && fingerContact2;
     public float screenScale => Mathf.Min(Screen.width, Screen.height);
-    
 
-    public void OnFingerContact1(InputValue input) => CheckStartInput(input.isPressed, fingerContact2);
-    public void OnFingerContact2(InputValue input) => CheckStartInput(fingerContact1, input.isPressed);
-    void CheckStartInput(bool one, bool two)
-    {
-        bool isNowRegistering = one && two;
 
-        if (isNowRegistering == true && registeringInput == false)
-        {
-            oldDragPosition = newFingerPos1 + newFingerPos2 / 2;
-            oldPinchDistance = Vector2.Distance(newFingerPos1, newFingerPos2);
-            oldRotationAngle = Vector2.SignedAngle(Vector2.up, newFingerPos2 - newFingerPos1);
-        }
-        fingerContact1 = one;
-        fingerContact2 = two;
-    }
+    public void OnFingerContact1(InputValue input) => fingerContact1 = input.isPressed;
+    public void OnFingerContact2(InputValue input) => fingerContact2 = input.isPressed;
+
 
     public void OnFingerPosition1(InputValue input) => CheckInput(input.Get<Vector2>(), newFingerPos2);
     public void OnFingerPosition2(InputValue input) => CheckInput(newFingerPos1, input.Get<Vector2>());
@@ -55,13 +38,16 @@ public class TwoFingerTouchControls : MonoBehaviour
         newFingerPos1 = one;
         newFingerPos2 = two;
 
+        // Check if the player has pressed and moved both fingers
+        bool bothFingersPressed = fingerContact1 && fingerContact2;
         bool bothFingersMoved = newFingerPos1 != oldFingerPos1 && newFingerPos2 != oldFingerPos2;
+
         if (bothFingersMoved == false)
         {
             // If one of the fingers has not moved, do not update old positions until both have moved
             return;
         }
-        else if (registeringInput == false)
+        else if (bothFingersPressed == false)
         {
             // Unless only one finger is pressed, because this means the player has not started a two-finger action yet
             oldFingerPos1 = newFingerPos1;
@@ -102,35 +88,32 @@ public class TwoFingerTouchControls : MonoBehaviour
         bool rotating = true;//oppositeDirection;// && perp1 && perp2; // If opposite and perpendicular, player is performing a rotation
 
         #region Invoke position change
+        Vector2 oldDragPosition = oldFingerPos1 + oldFingerPos2 / 2;
         Vector2 newDragPosition = newFingerPos1 + newFingerPos2 / 2;
         if (newDragPosition != oldDragPosition && dragging)
         {
             Vector2 scaledPositionDifference = (newDragPosition - oldDragPosition) / screenScale;
             onDrag.Invoke(scaledPositionDifference);
-
-            oldDragPosition = newDragPosition;
         }
         #endregion
 
         #region Invoke zoom change
+        float oldPinchDistance = Vector2.Distance(oldFingerPos1, oldFingerPos2);
         float newPinchDistance = Vector2.Distance(newFingerPos1, newFingerPos2);
         if (newPinchDistance != oldPinchDistance && pinching)
         {
             float scaledPinchDifference = (newPinchDistance - oldPinchDistance) / screenScale;
             onPinch.Invoke(scaledPinchDifference);
-
-            oldPinchDistance = newPinchDistance;
         }
         #endregion
 
         #region Invoke angle change
+        float oldRotationAngle = Vector2.SignedAngle(Vector2.up, oldFingerPos2 - oldFingerPos1);
         float newRotationAngle = Vector2.SignedAngle(Vector2.up, newFingerPos2 - newFingerPos1);
         if (newRotationAngle != oldRotationAngle && rotating)
         {
             float scaledRotationDifference = newRotationAngle - oldRotationAngle;
             onRotate.Invoke(scaledRotationDifference);
-
-            oldRotationAngle = newRotationAngle;
         }
         #endregion
 
