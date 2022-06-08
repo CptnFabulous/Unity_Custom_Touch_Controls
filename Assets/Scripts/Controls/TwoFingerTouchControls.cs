@@ -9,9 +9,6 @@ using UnityEngine.UI;
 
 public class TwoFingerTouchControls : MonoBehaviour
 {
-    public float pinchSensitivity;
-    public float dragSensitivity;
-
     //[Range(0, 0.5f)] public float sameThreshold = 0.2f;
     //[Range(0, 0.5f)] public float oppositeThreshold = 0.2f;
     //[Range(0, 0.5f)] public float perpendicularThreshold = 0.2f;
@@ -31,9 +28,6 @@ public class TwoFingerTouchControls : MonoBehaviour
     float oldRotationAngle;
 
     public bool registeringInput => fingerContact1 && fingerContact2;
-
-
-
     public float screenScale => Mathf.Min(Screen.width, Screen.height);
     
 
