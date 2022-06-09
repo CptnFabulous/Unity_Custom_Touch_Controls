@@ -9,8 +9,8 @@ using UnityEngine.UI;
 
 public class TwoFingerTouchControls : MonoBehaviour
 {
-    //[Range(0, 0.5f)] public float sameThreshold = 0.2f;
-    //[Range(0, 0.5f)] public float oppositeThreshold = 0.2f;
+    [Range(0, 0.5f)] public float sameThreshold = 0.2f;
+    [Range(0, 0.5f)] public float oppositeThreshold = 0.2f;
     //[Range(0, 0.5f)] public float perpendicularThreshold = 0.2f;
     public UnityEvent<Vector2> onDrag;
     public UnityEvent<float> onPinch;
@@ -28,8 +28,6 @@ public class TwoFingerTouchControls : MonoBehaviour
 
     public void OnFingerContact1(InputValue input) => fingerContact1 = input.isPressed;
     public void OnFingerContact2(InputValue input) => fingerContact2 = input.isPressed;
-
-
     public void OnFingerPosition1(InputValue input) => CheckInput(input.Get<Vector2>(), newFingerPos2);
     public void OnFingerPosition2(InputValue input) => CheckInput(newFingerPos1, input.Get<Vector2>());
     public void CheckInput(Vector2 one, Vector2 two)
@@ -60,7 +58,7 @@ public class TwoFingerTouchControls : MonoBehaviour
 
     void RegisterNewInput()
     {
-        /*
+        
         #region Calculate directions and dot product
         // Directions fingers have moved in
         Vector2 fingerDirection1 = newFingerPos1 - oldFingerPos1;
@@ -71,7 +69,7 @@ public class TwoFingerTouchControls : MonoBehaviour
         bool sameDirection = fingerDotProduct > (1 - sameThreshold);
         bool oppositeDirection = fingerDotProduct < (-1 + oppositeThreshold);
         #endregion
-
+        /*
         #region What directions are the fingers moving relative to their original positions?
         // Direction of finger 1 to finger 2, based off old positions
         Vector2 oldRelativeDirection = oldFingerPos2 - oldFingerPos1;
@@ -83,9 +81,14 @@ public class TwoFingerTouchControls : MonoBehaviour
         bool perp2 = Mathf.Abs(dotProductRelative2) < perpendicularThreshold;
         #endregion
         */
-        bool dragging = true;//sameDirection; // If fingers are moving in the same direction, player is dragging
-        bool pinching = true;//oppositeDirection && !perp1 && !perp2; // If opposite directions but not perpendicular, player is pinching/stretching
         bool rotating = true;//oppositeDirection;// && perp1 && perp2; // If opposite and perpendicular, player is performing a rotation
+        //Debug.Log("Same direction = " + sameDirection + ", opposite direction = " + oppositeDirection + ", perp1 = " + perp1 + ", perp2 = " + perp2);
+        
+        // Code accurately detects dragging and pinching, but rotation detection is off
+
+
+        bool dragging = sameDirection;//sameDirection; // If fingers are moving in the same direction, player is dragging
+        bool pinching = oppositeDirection;//oppositeDirection && !perp1 && !perp2; // If opposite directions but not perpendicular, player is pinching/stretching
 
         #region Invoke position change
         Vector2 oldDragPosition = oldFingerPos1 + oldFingerPos2 / 2;
