@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 // https://www.youtube.com/watch?v=5LEVj3PLufE
 
-public class TwoFingerTouchControls : MonoBehaviour
+public class TwoFingerTouchControls : ComplexTouch
 {
     [Range(0, 0.5f)] public float sameThreshold = 0.2f;
     [Range(0, 0.5f)] public float oppositeThreshold = 0.2f;
@@ -16,18 +16,11 @@ public class TwoFingerTouchControls : MonoBehaviour
     public UnityEvent<float> onPinch;
     public UnityEvent<float> onRotate;
 
-    bool fingerContact1;
-    bool fingerContact2;
     Vector2 newFingerPos1;
     Vector2 newFingerPos2;
     Vector2 oldFingerPos1;
     Vector2 oldFingerPos2;
 
-    public float screenScale => Mathf.Min(Screen.width, Screen.height);
-
-
-    public void OnFingerContact1(InputValue input) => fingerContact1 = input.isPressed;
-    public void OnFingerContact2(InputValue input) => fingerContact2 = input.isPressed;
     public void OnFingerPosition1(InputValue input) => CheckInput(input.Get<Vector2>(), newFingerPos2);
     public void OnFingerPosition2(InputValue input) => CheckInput(newFingerPos1, input.Get<Vector2>());
     public void CheckInput(Vector2 one, Vector2 two)
