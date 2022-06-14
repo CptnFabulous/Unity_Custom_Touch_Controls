@@ -10,6 +10,7 @@ public class ObjectView : MonoBehaviour
     [Header("Touch control info")]
     public TwoFingerTouchControls twoFingerControls;
     public TouchDrag oneFingerControls;
+    public float dragSensitivity = 2;
     public float rotationSensitivity = 90;
     public float zoomSensitivity = 10;
     public float minZoomDistance = 2;
@@ -21,6 +22,19 @@ public class ObjectView : MonoBehaviour
         twoFingerControls?.onDrag.AddListener(RotateOnPerpendicularAxes);
         twoFingerControls?.onPinch.AddListener(Zoom);
         twoFingerControls?.onRotate.AddListener(RotateOnCameraAxis);
+    }
+
+    public void Pan(Vector2 input)
+    {
+        Quaternion modifier = Quaternion.LookRotation(viewedObject.transform.position - viewingCamera.transform.position, viewingCamera.transform.up);
+        Vector3 right = modifier * Vector3.right;
+        Vector3 up = modifier * Vector3.up;
+        
+        Vector3 direction = (input.x * right) + (input.y * up);
+        direction *= dragSensitivity;
+        viewedObject.transform.Translate(direction, Space.World);
+
+        DistanceSanityCheck();
     }
     public void Pan(Vector2 startScreenPosition, Vector2 endScreenPosition)
     {
