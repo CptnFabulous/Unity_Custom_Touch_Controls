@@ -9,6 +9,7 @@ public class ObjectView : MonoBehaviour
 
     [Header("Touch control info")]
     public TwoFingerTouchControls twoFingerControls;
+    public TouchDrag oneFingerControls;
     public float rotationSensitivity = 90;
     public float zoomSensitivity = 10;
     public float minZoomDistance = 2;
@@ -16,10 +17,23 @@ public class ObjectView : MonoBehaviour
 
     private void Awake()
     {
+        oneFingerControls?.onDrag.AddListener((_)=> Pan(oneFingerControls.oldFingerPosition, oneFingerControls.newFingerPosition));
         twoFingerControls?.onDrag.AddListener(RotateOnPerpendicularAxes);
         twoFingerControls?.onPinch.AddListener(Zoom);
         twoFingerControls?.onRotate.AddListener(RotateOnCameraAxis);
     }
+    public void Pan(Vector2 startScreenPosition, Vector2 endScreenPosition)
+    {
+        float distance = Vector3.Distance(viewingCamera.transform.position, viewedObject.transform.position);
+
+        Vector3 startWorldPosition = ComplexTouch.ScreenToWorldPoint(viewingCamera, startScreenPosition, distance);
+        Vector3 endWorldPosition = ComplexTouch.ScreenToWorldPoint(viewingCamera, endScreenPosition, distance);
+        Vector3 worldDelta = endWorldPosition - startWorldPosition;
+        viewedObject.transform.Translate(worldDelta, Space.World);
+
+        DistanceSanityCheck();
+    }
+
     public void RotateOnPerpendicularAxes(Vector2 input)
     {
         input = rotationSensitivity * input;

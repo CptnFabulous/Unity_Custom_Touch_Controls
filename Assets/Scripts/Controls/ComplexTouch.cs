@@ -13,4 +13,10 @@ public class ComplexTouch : MonoBehaviour
     public void OnFingerContact2(InputValue input) => fingerContact2 = input.isPressed;
 
     public static float screenScale => Mathf.Min(Screen.width, Screen.height);
+
+    public static Vector3 ScreenToWorldPoint(Camera viewingCamera, Vector2 screenPosition, float distance)
+    {
+        Vector3 value = new Vector3(screenPosition.x, screenPosition.y, distance);
+        return viewingCamera.ScreenToWorldPoint(value);
+    }
 }
