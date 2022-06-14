@@ -11,7 +11,7 @@ public class TwoFingerTouchControls : MonoBehaviour
 {
     [Range(0, 0.5f)] public float sameThreshold = 0.2f;
     [Range(0, 0.5f)] public float oppositeThreshold = 0.2f;
-    //[Range(0, 0.5f)] public float perpendicularThreshold = 0.2f;
+    [Range(0, 0.5f)] public float perpendicularThreshold = 0.2f;
     public UnityEvent<Vector2> onDrag;
     public UnityEvent<float> onPinch;
     public UnityEvent<float> onRotate;
@@ -61,14 +61,26 @@ public class TwoFingerTouchControls : MonoBehaviour
         
         #region Calculate directions and dot product
         // Directions fingers have moved in
-        Vector2 fingerDirection1 = newFingerPos1 - oldFingerPos1;
-        Vector2 fingerDirection2 = newFingerPos2 - oldFingerPos2;
+        Vector2 fingerDirection1 = (newFingerPos1 - oldFingerPos1).normalized;
+        Vector2 fingerDirection2 = (newFingerPos2 - oldFingerPos2).normalized;
 
         // Dot product of finger directions. Are they moving in the same or opposite directions?
         float fingerDotProduct = Vector2.Dot(fingerDirection1, fingerDirection2);
         bool sameDirection = fingerDotProduct > (1 - sameThreshold);
         bool oppositeDirection = fingerDotProduct < (-1 + oppositeThreshold);
         #endregion
+
+        // To calculate rotation
+        // Get 'direction' between original positions
+        Vector2 oldRelativeDirection = (oldFingerPos2 - oldFingerPos1).normalized;
+        // Calculate the dot products of the new finger directions to the 'relative' direction
+        float dotProductRelative1 = Vector2.Dot(oldRelativeDirection, fingerDirection1);
+        float dotProductRelative2 = Vector2.Dot(oldRelativeDirection, fingerDirection2);
+        // If the new finger directions are opposite each other but perpendicular to the relative direction, it's a rotation. If they're perpendicular but the same, it's a drag. If they're opposite but not perpendicular, it's a pinch.
+        bool perp1 = Mathf.Abs(dotProductRelative1) < perpendicularThreshold;
+        bool perp2 = Mathf.Abs(dotProductRelative2) < perpendicularThreshold;
+
+        Debug.Log("Rotation check. Dot product 1 = " + dotProductRelative1 + ", dot product 2 = " + dotProductRelative2 + ",  1 is perpendicular = " + perp1 + ", 2 is perpendicular = " + perp2);
         /*
         #region What directions are the fingers moving relative to their original positions?
         // Direction of finger 1 to finger 2, based off old positions
@@ -77,13 +89,12 @@ public class TwoFingerTouchControls : MonoBehaviour
         float dotProductRelative1 = Vector2.Dot(oldRelativeDirection, fingerDirection1);
         float dotProductRelative2 = Vector2.Dot(oldRelativeDirection, fingerDirection2);
         // If the dot products are close to zero (specified by perpendicularThreshold), they are perpendicular to original direction
-        bool perp1 = Mathf.Abs(dotProductRelative1) < perpendicularThreshold;
-        bool perp2 = Mathf.Abs(dotProductRelative2) < perpendicularThreshold;
+        
         #endregion
         */
         bool rotating = true;//oppositeDirection;// && perp1 && perp2; // If opposite and perpendicular, player is performing a rotation
         //Debug.Log("Same direction = " + sameDirection + ", opposite direction = " + oppositeDirection + ", perp1 = " + perp1 + ", perp2 = " + perp2);
-        
+
         // Code accurately detects dragging and pinching, but rotation detection is off
 
 
