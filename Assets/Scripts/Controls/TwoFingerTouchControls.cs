@@ -92,14 +92,14 @@ public class TwoFingerTouchControls : MonoBehaviour
         
         #endregion
         */
-        bool rotating = true;//oppositeDirection;// && perp1 && perp2; // If opposite and perpendicular, player is performing a rotation
         //Debug.Log("Same direction = " + sameDirection + ", opposite direction = " + oppositeDirection + ", perp1 = " + perp1 + ", perp2 = " + perp2);
 
         // Code accurately detects dragging and pinching, but rotation detection is off
 
 
         bool dragging = sameDirection;//sameDirection; // If fingers are moving in the same direction, player is dragging
-        bool pinching = oppositeDirection;//oppositeDirection && !perp1 && !perp2; // If opposite directions but not perpendicular, player is pinching/stretching
+        bool pinching = oppositeDirection && !perp1 && !perp2;//oppositeDirection && !perp1 && !perp2; // If opposite directions but not perpendicular, player is pinching/stretching
+        bool rotating = oppositeDirection && (perp1 || perp2);//oppositeDirection;// && perp1 && perp2; // If opposite and perpendicular, player is performing a rotation
 
         #region Invoke position change
         Vector2 oldDragPosition = oldFingerPos1 + oldFingerPos2 / 2;
