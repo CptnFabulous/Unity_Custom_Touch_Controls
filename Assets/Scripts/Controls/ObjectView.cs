@@ -8,8 +8,8 @@ public class ObjectView : MonoBehaviour
     public Camera viewingCamera;
 
     [Header("Touch control info")]
-    public TwoFingerTouchControls twoFingerControls;
-    public TouchDrag oneFingerControls;
+    public TwoFingerTouchInput twoFingerControls;
+    public OneFingerDragInput oneFingerControls;
     public float dragSensitivity = 2;
     public float rotationSensitivity = 90;
     public float zoomSensitivity = 10;
