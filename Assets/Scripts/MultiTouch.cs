@@ -35,7 +35,10 @@ public class MultiTouch : MonoBehaviour
                 name: "Finger Contact #" + (i + 1),
                 type: InputActionType.Button,
                 binding: "<Touchscreen>/touch" + i + "/press",
-                interactions: "Press(behavior=2)",
+                // 0 registers a press, 1 registers a release, 2 checks for both.
+                // 1 is important because if 2, event will run before position is properly assigned.
+                // Contacts are updated anyway whenever the positions are
+                interactions: "Press(behavior=1)",
                 expectedControlType: "Touch"
                 );
 
